@@ -1,49 +1,53 @@
 import requests
+from logo import logo, story_head
 
-
-def get_new_lib():
-    ML_Endpoint = "http://madlibz.herokuapp.com/api/random"
-    mad_params = {
-        'minlength': 3,
-        'maxlength': 5
-    }    
-    response = requests.get(ML_Endpoint, params=mad_params)
-    lib = response.json()
-    print(lib)
-    blanks = lib["blanks"]
-    title = lib["title"]
-    story = lib["value"]
-    mad_lib = { 
-        'title': title,
-        'blanks': blanks,
-        'story': story
-    }
-    return mad_lib
-
-def fill_in_blanks(blank_lst):
-    entries = []
-    req_usr = "Please Enter a/an:"
-    for lib in blank_lst:
-        entry = input(f"{lib}: ")
-        entries.append(entry)
-    return entries
-    
+def get_users_words():
+    """
+    Function that iterates through each type of blank, and returns a list '
+    of the users input.
+    """
+    users_words = [] 
+    for item in madlib['blanks']:
+        word = input(f"Please enter a/n [{item}]: ")
+        users_words.append(word)
         
-def display_fin_lib():
-    s = []
-    i = 0
-    for line in madlib['story']:
-        s.append(f"{line} {entries[i]}")
-        i += 1
-        
-    print(s)
+    return users_words
     
-# GET MadLib from API
-madlib = get_new_lib()
-# get input from user (fill in blanks)
-entries = fill_in_blanks(madlib['blanks'])
-#print(len(madlib['blanks'])
-# Show final story
-display_fin_lib()
+    
+def put_madlib_together(usr_input, story):
+    """
+    Function that takes the list of users input and the story, and pieces 
+    it together, returning the final story
+    """
+    final_story = ""
+    for i in range(len(usr_input)):
+            final_story += str(story[i])
+            final_story += str(usr_input[i])
+    
+    return final_story
+    
+    
+# Getting Madlib from API
+ML_Endpoint = "http://madlibz.herokuapp.com/api/random"
+mad_params = {
+  'minlength': 2,
+  'maxlength': 17
+}
+response = requests.get(url=ML_Endpoint, params=mad_params)
+lib = response.json()
 
-#print(type(madlib['story']))
+title = lib['title']
+blanks = lib['blanks']
+story = lib['value']
+
+madlib = {
+  'title': title,
+  'blanks': blanks,
+  'story': story
+}
+
+print(logo)
+print(f"\n{madlib['title']}\n")
+users_input = get_users_words()
+final = put_madlib_together(users_input, madlib['story'])
+print(f"\n{story_head}\n    {final}")
